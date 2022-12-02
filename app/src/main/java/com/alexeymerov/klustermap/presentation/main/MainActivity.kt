@@ -3,14 +3,10 @@ package com.alexeymerov.klustermap.presentation.main
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
 import com.alexeymerov.klustermap.R
 import com.alexeymerov.klustermap.common.KlusterRenderer
-import com.alexeymerov.klustermap.common.extensions.addItems
 import com.alexeymerov.klustermap.common.extensions.collectWhenResumed
+import com.alexeymerov.klustermap.common.extensions.use
 import com.alexeymerov.klustermap.data.entity.PointEntity
 import com.alexeymerov.klustermap.databinding.ActivityMainBinding
 import com.alexeymerov.klustermap.presentation.main.MainViewModel.ViewAction
@@ -29,8 +25,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private val viewModel: MainViewModel by viewModels()
 
-    private lateinit var appBarConfiguration: AppBarConfiguration
-
     private lateinit var binding: ActivityMainBinding
 
     private lateinit var map: GoogleMap
@@ -43,7 +37,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         setContentView(binding.root)
 
         initViews()
-//        initNavController()
         initViewModel()
     }
 
@@ -58,35 +51,24 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
-    private fun initNavController() {
-        val navController = findNavController(R.id.nav_host_fragment_content_main)
-        appBarConfiguration = AppBarConfiguration(navController.graph)
-        setupActionBarWithNavController(navController, appBarConfiguration)
-    }
-
     private fun initViewModel() = with(viewModel) {
         viewState.collectWhenResumed(this@MainActivity, ::processViewState)
     }
 
-    private fun processViewState(it: ViewState) {
-        Timber.tag(javaClass.simpleName).d(it.javaClass.simpleName)
-        if (it is ViewState.NewPointsFound) updatePointsOnMap(it.array)
-    }
-
-    override fun onSupportNavigateUp(): Boolean {
-        val navController = findNavController(R.id.nav_host_fragment_content_main)
-        return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
+    private fun processViewState(state: ViewState) {
+        Timber.tag(javaClass.simpleName).d(state.javaClass.simpleName)
+        if (state is ViewState.NewPointsFound) updatePointsOnMap(state.points) // change to when if processing 3+ states
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
-        map.uiSettings.isRotateGesturesEnabled = false
-        map.setMinZoomPreference(1f)
-        map.setMaxZoomPreference(21f)
+        map.uiSettings.isRotateGesturesEnabled = false // i prefer more static behaviour
+        map.setMinZoomPreference(1f) // no reason. Better to eyes.
+        map.setMaxZoomPreference(21f) // no reason. Better to eyes.
         setUpCluster()
 
         map.setOnCameraIdleListener {
-            clusterManager.onCameraIdle()
+            clusterManager.onCameraIdle() // map has no addListener just replace. So need to call manually.
             val bounds = map.projection.visibleRegion.latLngBounds
             findPoints(bounds.northeast, bounds.southwest)
         }
@@ -95,18 +77,21 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun setUpCluster() {
         clusterManager = ClusterManager(this, map)
         clusterManager.renderer = KlusterRenderer(this, map, clusterManager)
-        map.setOnMarkerClickListener(clusterManager)
+        map.setOnMarkerClickListener(clusterManager) // Be aware. If you need to handle listener yourself then call cluster.markerClick manually
     }
 
-    private fun findPoints(northeast: LatLng, southwest: LatLng) {
-        sendNewAction(ViewAction.FindPoints(northeast, southwest))
-    }
+    private fun findPoints(northeast: LatLng, southwest: LatLng) = sendNewAction(ViewAction.FindPoints(northeast, southwest))
 
     private fun sendNewAction(action: ViewAction) = viewModel.processAction(action)
 
-    private fun updatePointsOnMap(points: Array<PointEntity>) {
-        clusterManager.clearItems()
-        clusterManager.addItems(points)
+    /**
+     * After many experiments this is the most fast-stable-readable solution i found.
+     * */
+    private fun updatePointsOnMap(points: Set<PointEntity>) {
+        clusterManager.use {
+            clearItems()
+            addItems(points)
+        }
         clusterManager.cluster()
     }
 }

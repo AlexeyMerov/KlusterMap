@@ -7,11 +7,15 @@ import com.google.android.gms.maps.model.LatLng
 import timber.log.Timber
 import javax.inject.Inject
 
+/**
+ * Do not doing anything important at the moment.
+ * For demonstration needs.
+ * */
 class PointsUseCaseImpl @Inject constructor(private val pointsRepository: PointsRepository) : PointsUseCase, BaseCoroutineScope() {
 
     override fun parsePoints() = pointsRepository.parsePoints()
 
-    override suspend fun findPointsInBounds(northeast: LatLng, southwest: LatLng): Array<PointEntity> {
+    override suspend fun findPointsInBounds(northeast: LatLng, southwest: LatLng): Set<PointEntity> {
         Timber.d("Start search UC")
         return pointsRepository.findPointsInBounds(northeast, southwest)
     }

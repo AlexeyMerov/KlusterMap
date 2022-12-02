@@ -9,6 +9,11 @@ import kotlinx.coroutines.SupervisorJob
 import timber.log.Timber
 import kotlin.coroutines.CoroutineContext
 
+/**
+ * Basic coroutineScope realization for non-lifecycle cases.
+ *
+ * IMPORTANT part is to call cancelJobs to avoid leaks.
+ * */
 abstract class BaseCoroutineScope(private val dispatcher: CoroutineDispatcher = Dispatchers.IO) : CoroutineScope, Cancelable {
 
     private val supervisorJob = SupervisorJob()

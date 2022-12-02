@@ -5,7 +5,11 @@ import androidx.room.PrimaryKey
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.clustering.ClusterItem
 
-@Entity(tableName = "points")
+/**
+ * The project uses the same class for UI and DB.
+ * It's not completely correct but made with an intention to avoid additional runtime actions. Like mapping.
+ * */
+@Entity(tableName = PointEntity.TABLE_NAME)
 data class PointEntity(
     @PrimaryKey
     val id: Long,
@@ -18,4 +22,12 @@ data class PointEntity(
     override fun getTitle(): String = id.toString()
 
     override fun getSnippet(): String = id.toString()
+
+    companion object {
+        const val COLUMN_ID_INDEX = 0
+        const val COLUMN_LAT_INDEX = 1
+        const val COLUMN_LON_INDEX = 2
+
+        const val TABLE_NAME = "points"
+    }
 }

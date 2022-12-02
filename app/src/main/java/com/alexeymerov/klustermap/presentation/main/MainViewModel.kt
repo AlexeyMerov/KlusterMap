@@ -19,9 +19,11 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(private val pointsUseCase: PointsUseCase) : ViewModel() {
 
+    /** Channel is more suitable in my head and experience then StateFlow */
     private val _viewState = Channel<ViewState>()
     val viewState = _viewState.receiveAsFlow()
 
+    /** To use debounce for reduce the amount of searches */
     private var clusterPointsJob: Job? = null
 
     private fun parsePoints() = pointsUseCase.parsePoints()
@@ -29,11 +31,11 @@ class MainViewModel @Inject constructor(private val pointsUseCase: PointsUseCase
     private fun findPoints(northeast: LatLng, southwest: LatLng) {
         clusterPointsJob?.cancel()
         clusterPointsJob = viewModelScope.launch(Dispatchers.IO) {
-            delay(500)
+            delay(250) // some debounce for reduce the amount of searches
             Timber.d("Start search VM")
-            val array = pointsUseCase.findPointsInBounds(northeast, southwest)
-            Timber.d("Stop search = ${array.size}")
-            setNewState(ViewState.NewPointsFound(array))
+            val points = pointsUseCase.findPointsInBounds(northeast, southwest)
+            Timber.d("Stop search = ${points.size}")
+            setNewState(ViewState.NewPointsFound(points))
         }
     }
 
@@ -53,7 +55,7 @@ class MainViewModel @Inject constructor(private val pointsUseCase: PointsUseCase
     }
 
     sealed interface ViewState {
-        class NewPointsFound(val array: Array<PointEntity>) : ViewState
+        class NewPointsFound(val points: Set<PointEntity>) : ViewState
     }
 
     sealed interface ViewAction {

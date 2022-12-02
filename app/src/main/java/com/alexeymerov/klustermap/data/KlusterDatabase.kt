@@ -16,7 +16,7 @@ abstract class KlusterDatabase : RoomDatabase() {
 
         fun buildDatabase(context: Context): KlusterDatabase {
             return Room.databaseBuilder(context, KlusterDatabase::class.java, "klustermap.db")
-//                .addMigrations()
+//                .addMigrations() // in case some DB changes, don't forget to implement a migration logic
                 .fallbackToDestructiveMigration()
                 .build()
         }

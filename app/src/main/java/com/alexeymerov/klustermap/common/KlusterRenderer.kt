@@ -10,7 +10,12 @@ import com.google.maps.android.clustering.Cluster
 import com.google.maps.android.clustering.ClusterManager
 import com.google.maps.android.clustering.view.DefaultClusterRenderer
 
-
+/**
+ * Custom realization for clusters. At the moment just to use custom icons.
+ * And clusterize 2 or more points (default is 4).
+ *
+ * Vector images not allowed by the library.
+ * */
 class KlusterRenderer(context: Context, map: GoogleMap, clusterManager: ClusterManager<PointEntity>) :
     DefaultClusterRenderer<PointEntity>(context, map, clusterManager) {
 
@@ -18,6 +23,8 @@ class KlusterRenderer(context: Context, map: GoogleMap, clusterManager: ClusterM
     private val icon2 = BitmapDescriptorFactory.fromResource(R.drawable.whit_60)
     private val icon3 = BitmapDescriptorFactory.fromResource(R.drawable.whit_90)
     private val icon4 = BitmapDescriptorFactory.fromResource(R.drawable.whit_120)
+
+    override fun shouldRenderAsCluster(cluster: Cluster<PointEntity>): Boolean = cluster.size > 1
 
     override fun getDescriptorForCluster(cluster: Cluster<PointEntity>): BitmapDescriptor {
         return when {
