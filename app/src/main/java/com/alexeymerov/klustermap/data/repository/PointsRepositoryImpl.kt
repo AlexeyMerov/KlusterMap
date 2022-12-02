@@ -8,7 +8,6 @@ import com.alexeymerov.klustermap.common.BaseCoroutineScope
 import com.alexeymerov.klustermap.data.dao.PointsDao
 import com.alexeymerov.klustermap.data.entity.PointEntity
 import com.google.android.gms.maps.model.LatLng
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.io.BufferedReader
@@ -22,8 +21,8 @@ class PointsRepositoryImpl @Inject constructor(
 
     override fun parsePoints() {
         launch {
-            val yes = sharedPreferences.getBoolean(KEY_DB_FILLED, false)
-            if (yes) return@launch
+            val isDbFilled = sharedPreferences.getBoolean(KEY_DB_FILLED, false)
+            if (isDbFilled) return@launch
 
             val set = resources.openRawResource(R.raw.hotspots)
                 .reader()
@@ -65,7 +64,8 @@ class PointsRepositoryImpl @Inject constructor(
             .toHashSet()
     }
 
-    override fun findPointsInBounds(northeast: LatLng, southwest: LatLng): Flow<Array<PointEntity>> {
+    override suspend fun findPointsInBounds(northeast: LatLng, southwest: LatLng): Array<PointEntity> {
+        Timber.d("Start search RP")
         return pointsDao.findPointsInBounds(
             latWest = southwest.latitude,
             latEast = northeast.latitude,

@@ -23,6 +23,6 @@ abstract class PointsDao {
     abstract suspend fun getRowCount(): Int
 
     @Query("SELECT * FROM points WHERE lat > :latWest AND lat < :latEast AND lon < :lonNorth AND lon > :lonSouth LIMIT 10000")
-    abstract fun findPointsInBounds(latWest: Double, latEast: Double, lonNorth: Double, lonSouth: Double): Flow<Array<PointEntity>>
+    abstract suspend fun findPointsInBounds(latWest: Double, latEast: Double, lonNorth: Double, lonSouth: Double): Array<PointEntity>
 
 }
