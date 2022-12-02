@@ -13,7 +13,6 @@ buildscript {
         classpath deps.google.google_services
         classpath deps.kotlin.gradle_plugin
         classpath deps.google.hilt.gradle_plugin
-        classpath deps.androidx.navigation.safe_args
         classpath deps.google.secrets_gradle_plugin
 
     }

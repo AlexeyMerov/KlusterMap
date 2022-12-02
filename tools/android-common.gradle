@@ -1,5 +1,4 @@
 apply plugin: 'dagger.hilt.android.plugin'
-apply plugin: 'androidx.navigation.safeargs.kotlin'
 
 android {
     namespace 'com.alexeymerov.klustermap'
@@ -72,8 +71,6 @@ android {
 dependencies {
     implementation deps.google.hilt.android
     kapt deps.google.hilt.compiler
-    implementation deps.google.hilt.work
-    implementation deps.google.hilt.navigation
 
     implementation deps.androidx.navigation.fragment
     implementation deps.androidx.navigation.ui
