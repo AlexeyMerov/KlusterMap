@@ -49,7 +49,7 @@ android {
         checkReleaseBuilds true
         xmlReport false
         abortOnError true
-        warningsAsErrors true
+//        warningsAsErrors true
         fatal 'StopShip'
         disable "UnsafeExperimentalUsageError",
                 "UnsafeExperimentalUsageWarning"

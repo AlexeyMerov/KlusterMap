@@ -9,11 +9,13 @@ buildscript {
     }
 
     dependencies {
-        classpath "com.android.tools.build:gradle:7.3.1"
+        classpath deps.android.tools_gradle
         classpath deps.google.google_services
         classpath deps.kotlin.gradle_plugin
         classpath deps.google.hilt.gradle_plugin
         classpath deps.androidx.navigation.safe_args
+        classpath deps.google.secrets_gradle_plugin
+
     }
 }
 
@@ -25,14 +27,6 @@ plugins {
 }
 
 allprojects {
-//    repositories {
-//        google()
-//        mavenCentral()
-//        maven { url 'https://maven.google.com' }
-//        maven { url "https://jitpack.io" }
-//        maven { url "https://kochava.bintray.com/maven" }
-//    }
-
     project.configurations.all {
         resolutionStrategy.eachDependency { details ->
             if (details.requested.group == 'org.jetbrains.kotlin') {

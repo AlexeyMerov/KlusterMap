@@ -2,6 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
 apply from: "$project.rootDir/tools/android-common.gradle"
 
 dependencies {
@@ -11,6 +12,17 @@ dependencies {
     implementation deps.androidx.constraint_layout
 
     implementation deps.google.material
+
+    implementation deps.androidx.room.runtime
+    implementation deps.androidx.room.ktx
+    kapt deps.androidx.room.compiler
+
+    implementation deps.google.playservices.maps
+    implementation deps.google.maps_utils
+    implementation deps.google.maps_utils_ktx
+
+    // required to avoid crash on Android 12 API 31
+    implementation deps.androidx.work.runtime_ktx
 
 //    testImplementation 'junit:junit:4.13.2'
 }

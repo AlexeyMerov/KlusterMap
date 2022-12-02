@@ -8,7 +8,7 @@ ext.buildConfig = [
 ]
 
 ext.versions = [
-        tools_gradle          : '7.0.2',
+        tools_gradle          : '7.3.1',
 
         // kotlin
         kotlin                : '1.7.20',
@@ -25,12 +25,12 @@ ext.versions = [
         play_services_base    : '17.6.0',
         play_services         : '19.3.0',
         play_location         : '18.0.0',
-        play_maps             : '17.0.1',
+        play_maps             : '18.1.0',
         play_core             : '1.10.1',
         play_core_ktx         : '1.8.1',
         androidx_core         : '1.9.0',
         androidx_appcompat    : '1.5.1',
-        androidx_work         : '2.6.0',
+        androidx_work         : '2.7.1',
         androidx_paging       : '2.1.2',
         androidx_paging3      : '3.0.1',
         androidx_legacy       : '1.0.0',
@@ -48,6 +48,9 @@ ext.versions = [
         retrofit_okio         : '2.6.0',
 
         moshi                 : '1.12.0',
+        secrets_gradle_plugin : '2.0.1',
+        maps_utils            : '2.3.0',
+        maps_utils_ktx        : '3.4.0',
 
         activity_ktx          : '1.3.1',
         fragment_ktx          : '1.3.6',
@@ -131,22 +134,25 @@ ext.deps = [
         ],
 
         'google'  : [
-                'hilt'           : [
+                'hilt'                 : [
                         'android'      : "com.google.dagger:hilt-android:${versions.hilt}",
                         "compiler"     : "com.google.dagger:hilt-compiler:${versions.hilt}",
                         "gradle_plugin": "com.google.dagger:hilt-android-gradle-plugin:${versions.hilt}",
                         "work"         : "androidx.hilt:hilt-work:1.0.0",
                         "navigation"   : "androidx.hilt:hilt-navigation-fragment:1.0.0"
                 ],
-                'google_services': "com.google.gms:google-services:${versions.google_services_gms}",
-                'material'       : "com.google.android.material:material:${versions.google_material}",
-                'playservices'   : [
+                'google_services'      : "com.google.gms:google-services:${versions.google_services_gms}",
+                'secrets_gradle_plugin': "com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin:${versions.secrets_gradle_plugin}",
+                'material'             : "com.google.android.material:material:${versions.google_material}",
+                'playservices'         : [
                         basement: "com.google.android.gms:play-services-basement:${versions.play_services_base}",
                         maps    : "com.google.android.gms:play-services-maps:${versions.play_maps}",
                         location: "com.google.android.gms:play-services-location:${versions.play_location}"
                 ],
-                'play_core'      : "com.google.android.play:core:${versions.play_core}",
-                'play_core_ktx'  : "com.google.android.play:core-ktx:${versions.play_core_ktx}",
+                'play_core'            : "com.google.android.play:core:${versions.play_core}",
+                'play_core_ktx'        : "com.google.android.play:core-ktx:${versions.play_core_ktx}",
+                'maps_utils'           : "com.google.maps.android:android-maps-utils:${versions.maps_utils}",
+                'maps_utils_ktx'       : "com.google.maps.android:maps-utils-ktx:${versions.maps_utils_ktx}",
         ],
 
         'retrofit': [
