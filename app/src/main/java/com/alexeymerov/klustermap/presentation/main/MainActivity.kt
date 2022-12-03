@@ -3,6 +3,7 @@ package com.alexeymerov.klustermap.presentation.main
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import com.alexeymerov.klustermap.R
 import com.alexeymerov.klustermap.common.KlusterRenderer
 import com.alexeymerov.klustermap.common.extensions.collectWhenResumed
@@ -11,6 +12,7 @@ import com.alexeymerov.klustermap.data.entity.PointEntity
 import com.alexeymerov.klustermap.databinding.ActivityMainBinding
 import com.alexeymerov.klustermap.presentation.main.MainViewModel.ViewAction
 import com.alexeymerov.klustermap.presentation.main.MainViewModel.ViewState
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
@@ -35,33 +37,49 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        initViews()
+        setSupportActionBar(binding.toolbar)
         initViewModel()
     }
 
-    private fun initViews() {
-        setSupportActionBar(binding.toolbar)
-
-        val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
-        mapFragment.getMapAsync(this)
-
-        binding.fab.setOnClickListener { view ->
-            sendNewAction(ViewAction.ParsePoints)
-        }
-    }
-
-    private fun initViewModel() = with(viewModel) {
-        viewState.collectWhenResumed(this@MainActivity, ::processViewState)
+    private fun initViewModel() {
+        viewModel.viewState.collectWhenResumed(this@MainActivity, ::processViewState)
+        sendNewAction(ViewAction.Initialize)
     }
 
     private fun processViewState(state: ViewState) {
         Timber.tag(javaClass.simpleName).d(state.javaClass.simpleName)
-        if (state is ViewState.NewPointsFound) updatePointsOnMap(state.points) // change to when if processing 3+ states
+        when (state) {
+            is ViewState.NewPointsFound -> updatePointsOnMap(state.points)
+            ViewState.FirstInit -> prepareFirstInit()
+            ViewState.ShowMap -> prepareMap()
+        }
+    }
+
+    private fun prepareFirstInit() {
+        binding.textView.isVisible = true
+        binding.buttonView.isVisible = true
+        binding.buttonView.setOnClickListener {
+            binding.buttonView.isEnabled = false
+            sendNewAction(ViewAction.ParsePoints)
+        }
+        viewModel.parseProgress.collectWhenResumed(this@MainActivity) {
+            binding.buttonView.text = it.toString()
+        }
+    }
+
+    private fun prepareMap() {
+        val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
+        mapFragment.getMapAsync(this)
+
+        binding.textView.isVisible = false
+        binding.buttonView.isVisible = false
+        binding.map.isVisible = true
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
+        val usaLatLng = CameraUpdateFactory.newLatLng(LatLng(40.0, -100.0))
         map = googleMap
+        map.moveCamera(usaLatLng)
         map.uiSettings.isRotateGesturesEnabled = false // i prefer more static behaviour
         map.setMinZoomPreference(1f) // no reason. Better to eyes.
         map.setMaxZoomPreference(21f) // no reason. Better to eyes.

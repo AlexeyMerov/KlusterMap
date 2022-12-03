@@ -5,9 +5,14 @@ import android.content.res.Resources
 import androidx.core.content.edit
 import com.alexeymerov.klustermap.R
 import com.alexeymerov.klustermap.common.BaseCoroutineScope
+import com.alexeymerov.klustermap.common.extensions.send
 import com.alexeymerov.klustermap.data.dao.PointsDao
 import com.alexeymerov.klustermap.data.entity.PointEntity
 import com.google.android.gms.maps.model.LatLng
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.io.BufferedReader
@@ -23,6 +28,13 @@ class PointsRepositoryImpl @Inject constructor(
     private val resources: Resources,
     private val pointsDao: PointsDao
 ) : PointsRepository, BaseCoroutineScope() {
+
+    override val isDatabaseFilled: Boolean
+        get() = sharedPreferences.getBoolean(KEY_DB_FILLED, false)
+
+    private var progress = 0
+    private val _parseProgress = Channel<Int>()
+    override val parseProgress: Flow<Int> = _parseProgress.receiveAsFlow()
 
     /**
      * Parsing points from integrated CSV table.
@@ -41,20 +53,33 @@ class PointsRepositoryImpl @Inject constructor(
      * */
     override fun parsePoints() {
         launch {
-            val isDbFilled = sharedPreferences.getBoolean(KEY_DB_FILLED, false)
-            if (isDbFilled) return@launch
+            if (isDatabaseFilled) return@launch
 
             val set = resources.openRawResource(R.raw.hotspots)
                 .reader()
                 .buffered(39)
                 .use(::parsePoints)
 
+            val timerJob = launchTimer()
             pointsDao.insertAll(set)
+            timerJob.cancel()
+            _parseProgress.send(this, 100)
 
             sharedPreferences.edit {
                 putBoolean(KEY_DB_FILLED, true)
             }
             Timber.d("Items in DB = ${pointsDao.getRowCount()}")
+        }
+    }
+
+    /**
+     * It 4 am in the morning. I have no desire to make a cool approach for the logic.
+     * I want it to be depended on something, not just hardcoded digits.
+     * */
+    private fun launchTimer() = launch {
+        for (i in 0..69) { // first 30 sec is reader -> hashMap. 100 would be in the end of inserting
+            delay(850) // 1000 is a lot, 500 not enough. Science.
+            _parseProgress.send(this, progress++)
         }
     }
 
@@ -71,11 +96,18 @@ class PointsRepositoryImpl @Inject constructor(
         var lat: String
         var lon: String
 
+//        percentage = (x/y)*100
+
         return reader
             .lineSequence()
             .drop(1)
             .mapIndexedNotNull { i, it ->
-                if (i % 100000 == 0) Timber.d("$i") // to log the process. Although room.insert is the most time consuming.
+                if (i % 100000 == 0) {
+                    /** @see launchTimer */
+                    progress += 2
+                    _parseProgress.send(this, progress)
+                    Timber.d("$i")
+                }
 
                 items = it.substring(it.indexOf(',') + 1).split(",")
                 id = items[0]
@@ -118,7 +150,7 @@ class PointsRepositoryImpl @Inject constructor(
 
     }
 
-    private companion object {
+    companion object {
         const val KEY_DB_FILLED = "key_db_filled"
     }
 }
