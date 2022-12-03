@@ -48,8 +48,9 @@ class PointsRepositoryImpl @Inject constructor(
      * but with this amount of data, it's better to control it in the code, not in the DB callback.
      * Plus convert .csv to .db is kinda hell.
      *
-     * Open DB directly to execSQL has no performance improvements.
      * From couple devices 1.5m items parsed in ~1 minute.
+     * Open DB directly to execSQL has no performance improvements.
+     * Same for predefined set of SQL Query String instead of Entity or ContentValues - also no speed boost.
      * */
     override fun parsePoints() {
         launch {
