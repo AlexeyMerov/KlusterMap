@@ -96,12 +96,11 @@ class PointsRepositoryImpl @Inject constructor(
         var lat: String
         var lon: String
 
-//        percentage = (x/y)*100
-
-        return reader
+        val result = HashSet<PointEntity>()
+        reader
             .lineSequence()
             .drop(1)
-            .mapIndexedNotNull { i, it ->
+            .forEachIndexed { i, it ->
                 if (i % 100000 == 0) {
                     /** @see launchTimer */
                     progress += 2
@@ -115,12 +114,10 @@ class PointsRepositoryImpl @Inject constructor(
                 lon = items[2]
 
                 if (lat.isNotEmpty() && lon.isNotEmpty()) {
-                    PointEntity(id.toLong(), lat.toDouble(), lon.toDouble())
-                } else {
-                    null
+                    result.add(PointEntity(id.toLong(), lat.toDouble(), lon.toDouble()))
                 }
             }
-            .toHashSet()
+        return result
     }
 
     /**

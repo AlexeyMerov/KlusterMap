@@ -59,7 +59,7 @@ class MainViewModel @Inject constructor(private val pointsUseCase: PointsUseCase
     private fun setNewState(state: ViewState) = _viewState.send(viewModelScope, state)
 
     fun processAction(action: ViewAction) {
-        Timber.tag(javaClass.simpleName).d(action.javaClass.simpleName)
+        Timber.d(action.javaClass.simpleName)
         when (action) {
             is ViewAction.FindPoints -> findPoints(action.northeast, action.southwest)
             ViewAction.ParsePoints -> parsePoints()

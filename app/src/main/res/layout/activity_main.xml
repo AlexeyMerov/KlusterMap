@@ -38,7 +38,7 @@
             android:textColor="@color/black"
             android:textSize="16sp"
             android:visibility="gone"
-            app:drawableTopCompat="@drawable/whit_120"
+            app:drawableTopCompat="@drawable/whit_60"
             app:layout_constraintBottom_toTopOf="@+id/buttonView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

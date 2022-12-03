@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import com.alexeymerov.klustermap.data.dao.PointsDao
 import com.alexeymerov.klustermap.data.entity.PointEntity
 
-@Database(entities = [PointEntity::class], version = 1)
+@Database(entities = [PointEntity::class], version = 1, exportSchema = false)
 abstract class KlusterDatabase : RoomDatabase() {
 
     abstract fun pointsDao(): PointsDao

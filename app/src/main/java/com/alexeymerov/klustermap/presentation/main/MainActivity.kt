@@ -47,7 +47,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun processViewState(state: ViewState) {
-        Timber.tag(javaClass.simpleName).d(state.javaClass.simpleName)
+        Timber.d(state.javaClass.simpleName)
         when (state) {
             is ViewState.NewPointsFound -> updatePointsOnMap(state.points)
             ViewState.FirstInit -> prepareFirstInit()
