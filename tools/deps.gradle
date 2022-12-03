@@ -1,0 +1,112 @@
+ext.buildConfig = [
+        version_code       : 100,
+        version_name       : "1.0.0",
+        target_sdk_version : '33',
+        min_sdk_version    : 24,
+        compile_sdk_version: 33,
+        kotlin_lang_version: "1.7"
+]
+
+ext.versions = [
+        tools_gradle         : '7.3.1',
+
+        // kotlin
+        kotlin               : '1.7.20',
+        kotlin_coroutines    : '1.6.0',
+
+        navigation           : '2.5.3',
+        hilt                 : '2.38.1',
+        room                 : '2.4.3',
+
+        google_services_gms  : '4.3.5',
+        lifecycle_extensions : '2.2.0',
+        lifecycle            : '2.3.1',
+
+        play_services_base   : '18.1.0',
+        play_services        : '19.3.0',
+        play_location        : '18.0.0',
+        play_maps            : '18.1.0',
+
+        androidx_core        : '1.9.0',
+        androidx_appcompat   : '1.5.1',
+        androidx_work        : '2.7.1',
+
+        secrets_gradle_plugin: '2.0.1',
+        maps_utils           : '2.4.0',
+        maps_utils_ktx       : '3.4.0',
+
+        activity_ktx         : '1.3.1',
+        fragment_ktx         : '1.3.6',
+
+        google_material      : '1.7.0',
+        constraintlayout     : '2.1.4',
+
+        timber               : '4.7.1',
+]
+
+ext.deps = [
+        'android' : [
+                'tools_gradle': "com.android.tools.build:gradle:${versions.tools_gradle}",
+        ],
+
+        'androidx': [
+                'appcompat'        : "androidx.appcompat:appcompat:${versions.androidx_appcompat}",
+                'core_ktx'         : "androidx.core:core-ktx:${versions.androidx_core}",
+                'fragment_ktx'     : "androidx.fragment:fragment-ktx:${versions.fragment_ktx}",
+                'activity_ktx'     : "androidx.activity:activity-ktx:${versions.activity_ktx}",
+                'constraint_layout': "androidx.constraintlayout:constraintlayout:${versions.constraintlayout}",
+                'lifecycle'        : [
+                        'extensions'   : "androidx.lifecycle:lifecycle-extensions:${versions.lifecycle_extensions}",
+                        'viewmodel_ktx': "androidx.lifecycle:lifecycle-viewmodel-ktx:${versions.lifecycle}",
+                        'livedata_ktx' : "androidx.lifecycle:lifecycle-livedata-ktx:${versions.lifecycle}",
+                        'runtime_ktx'  : "androidx.lifecycle:lifecycle-runtime-ktx:${versions.lifecycle}",
+                        'process'      : "androidx.lifecycle:lifecycle-process:${versions.lifecycle}",
+                ],
+                'work'             : [
+                        'runtime'    : "androidx.work:work-runtime:${versions.androidx_work}",
+                        'runtime_ktx': "androidx.work:work-runtime-ktx:${versions.androidx_work}"
+                ],
+                'room'             : [
+                        'runtime' : "androidx.room:room-runtime:${versions.room}",
+                        'ktx'     : "androidx.room:room-ktx:${versions.room}",
+                        'compiler': "androidx.room:room-compiler:${versions.room}"
+                ],
+                'navigation'       : [
+                        'fragment' : "androidx.navigation:navigation-fragment-ktx:${versions.navigation}",
+                        'ui'       : "androidx.navigation:navigation-ui-ktx:${versions.navigation}",
+                        'safe_args': "androidx.navigation:navigation-safe-args-gradle-plugin:${versions.navigation}"
+                ]
+        ],
+
+        'kotlin'  : [
+                'gradle_plugin': "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}",
+                'coroutines'   : [
+                        'core'         : "org.jetbrains.kotlinx:kotlinx-coroutines-core:${versions.kotlin_coroutines}",
+                        'android'      : "org.jetbrains.kotlinx:kotlinx-coroutines-android:${versions.kotlin_coroutines}",
+                        'play_services': "org.jetbrains.kotlinx:kotlinx-coroutines-play-services:${versions.kotlin_coroutines}",
+                ],
+        ],
+
+        'google'  : [
+                'hilt'                 : [
+                        'android'      : "com.google.dagger:hilt-android:${versions.hilt}",
+                        "compiler"     : "com.google.dagger:hilt-compiler:${versions.hilt}",
+                        "gradle_plugin": "com.google.dagger:hilt-android-gradle-plugin:${versions.hilt}",
+                ],
+                'google_services'      : "com.google.gms:google-services:${versions.google_services_gms}",
+                'secrets_gradle_plugin': "com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin:${versions.secrets_gradle_plugin}",
+                'material'             : "com.google.android.material:material:${versions.google_material}",
+                'playservices'         : [
+                        basement: "com.google.android.gms:play-services-base:${versions.play_services_base}",
+                        maps    : "com.google.android.gms:play-services-maps:${versions.play_maps}",
+                        location: "com.google.android.gms:play-services-location:${versions.play_location}"
+                ],
+                'maps_utils'           : "com.google.maps.android:android-maps-utils:${versions.maps_utils}",
+                'maps_utils_ktx'       : "com.google.maps.android:maps-utils-ktx:${versions.maps_utils_ktx}",
+        ],
+
+        'debug'   : [
+                'timber': "com.jakewharton.timber:timber:${versions.timber}"
+        ],
+
+]

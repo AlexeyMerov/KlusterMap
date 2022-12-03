@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "970922264372",
+    "project_id": "klustermap",
+    "storage_bucket": "klustermap.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:970922264372:android:1744cfdfd368a1d3e50761",
+        "android_client_info": {
+          "package_name": "com.alexeymerov.klustermap"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "970922264372-e8g0329ih0696iqcr45o6aoocjglb8qp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.alexeymerov.klustermap",
+            "certificate_hash": "e71c004dd78932a89a6900d53f1339710861c560"
+          }
+        },
+        {
+          "client_id": "970922264372-438gtbcb3k8qt55j3hjnv0nvv0mesf0g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9qqH_ZL7v3wgYRIxWwqQZRPbg2ZKwKEI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "970922264372-438gtbcb3k8qt55j3hjnv0nvv0mesf0g.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

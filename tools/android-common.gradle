@@ -1,0 +1,83 @@
+apply plugin: 'dagger.hilt.android.plugin'
+
+android {
+    namespace 'com.alexeymerov.klustermap'
+    compileSdkVersion buildConfig.compile_sdk_version
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+
+    kotlinOptions {
+        jvmTarget = "11"
+        languageVersion = buildConfig.kotlin_lang_version
+    }
+
+    buildFeatures {
+        viewBinding true
+    }
+
+    defaultConfig {
+        applicationId "com.alexeymerov.klustermap"
+
+        versionCode buildConfig.version_code
+        versionName buildConfig.version_name
+
+        minSdkVersion buildConfig.min_sdk_version
+        targetSdkVersion buildConfig.target_sdk_version
+        vectorDrawables.useSupportLibrary = true
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        debug {
+            debuggable true
+            minifyEnabled false
+        }
+        release {
+            debuggable false
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), "$project.rootDir/tools/proguard-rules.pro"
+        }
+    }
+
+    lintOptions {
+        // https://developer.android.com/reference/tools/gradle-api/4.2/com/android/build/api/dsl/LintOptions
+        checkReleaseBuilds true
+        xmlReport false
+        abortOnError true
+//        warningsAsErrors true
+        fatal 'StopShip'
+        disable "UnsafeExperimentalUsageError",
+                "UnsafeExperimentalUsageWarning"
+    }
+
+    testOptions {
+        unitTests {
+            returnDefaultValues = true
+            includeAndroidResources = true
+            all {
+                testLogging {
+                    events 'passed', 'skipped', 'failed'
+                }
+            }
+        }
+        animationsDisabled true
+    }
+}
+
+dependencies {
+    implementation deps.google.hilt.android
+    kapt deps.google.hilt.compiler
+
+    implementation deps.androidx.navigation.fragment
+    implementation deps.androidx.navigation.ui
+
+    implementation deps.debug.timber
+}
+
+kapt {
+    correctErrorTypes true
+}
