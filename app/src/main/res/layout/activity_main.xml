@@ -35,7 +35,6 @@
             android:drawablePadding="16dp"
             android:text="@string/first_time"
             android:textAlignment="center"
-            android:textColor="@color/black"
             android:textSize="16sp"
             android:visibility="gone"
             app:drawableTopCompat="@drawable/whit_60"
