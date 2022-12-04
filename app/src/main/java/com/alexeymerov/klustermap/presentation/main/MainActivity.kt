@@ -3,7 +3,6 @@ package com.alexeymerov.klustermap.presentation.main
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.isVisible
 import com.alexeymerov.klustermap.R
 import com.alexeymerov.klustermap.common.KlusterRenderer
 import com.alexeymerov.klustermap.common.extensions.collectWhenResumed
@@ -50,30 +49,13 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         Timber.d(state.javaClass.simpleName)
         when (state) {
             is ViewState.NewPointsFound -> updatePointsOnMap(state.points)
-            ViewState.FirstInit -> prepareFirstInit()
             ViewState.ShowMap -> prepareMap()
-        }
-    }
-
-    private fun prepareFirstInit() {
-        binding.textView.isVisible = true
-        binding.buttonView.isVisible = true
-        binding.buttonView.setOnClickListener {
-            binding.buttonView.isEnabled = false
-            sendNewAction(ViewAction.ParsePoints)
-        }
-        viewModel.parseProgress.collectWhenResumed(this@MainActivity) {
-            binding.buttonView.text = it.toString()
         }
     }
 
     private fun prepareMap() {
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
-
-        binding.textView.isVisible = false
-        binding.buttonView.isVisible = false
-        binding.map.isVisible = true
     }
 
     override fun onMapReady(googleMap: GoogleMap) {

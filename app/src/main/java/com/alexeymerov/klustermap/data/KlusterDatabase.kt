@@ -13,12 +13,13 @@ abstract class KlusterDatabase : RoomDatabase() {
     abstract fun pointsDao(): PointsDao
 
     companion object {
-        private const val DB_NAME = "kluster_map"
+        private const val DB_NAME = "klustermap"
 
         fun buildDatabase(context: Context): KlusterDatabase {
             return Room.databaseBuilder(context, KlusterDatabase::class.java, DB_NAME)
+                .createFromAsset("database/klustermap.db")
 //                .addMigrations() // in case some DB changes, don't forget to implement a migration logic
-                .fallbackToDestructiveMigration()
+//                .fallbackToDestructiveMigration()
                 .build()
         }
     }
