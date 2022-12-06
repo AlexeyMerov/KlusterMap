@@ -2,21 +2,31 @@ package com.alexeymerov.klustermap.data.dao
 
 import android.database.Cursor
 import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.alexeymerov.klustermap.data.entity.PointEntity
 
 @Dao
 abstract class PointsDao {
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    abstract suspend fun insertAll(entity: Set<PointEntity>)
-
-    @Query("SELECT COUNT(id) FROM points")
-    abstract suspend fun getRowCount(): Int
-
-    @Query("SELECT * FROM points WHERE lat > :latWest AND lat < :latEast AND lon < :lonNorth AND lon > :lonSouth LIMIT 10000")
-    abstract fun findPointsInBounds(latWest: Double, latEast: Double, lonNorth: Double, lonSouth: Double): Cursor
-
+    /**
+     * Dividing our big bound by 4 smaller ones to disperse points.
+     * Additionally using random() for same purpose but inside smaller zone.
+     * UNION ALL but not UNION since we don't need an uniqueness.
+     *
+     * Without this query it's also possible, just make 4 calls from outside but will add more boilerplate.
+     * */
+    @Query("SELECT * FROM (SELECT * FROM points WHERE (lat BETWEEN :latCenter AND :latNorth) AND (lon BETWEEN :lonWest AND :lonCenter) ORDER BY random() LIMIT 2500) " +
+               "UNION ALL " +
+               "SELECT * FROM (SELECT * FROM points WHERE (lat BETWEEN :latCenter AND :latNorth) AND (lon BETWEEN :lonCenter AND :lonEast) ORDER BY random() LIMIT 2500) " +
+               "UNION ALL " +
+               "SELECT * FROM (SELECT * FROM points WHERE (lat BETWEEN :latSouth AND :latCenter) AND (lon BETWEEN :lonWest AND :lonCenter) ORDER BY random() LIMIT 2500) " +
+               "UNION ALL " +
+               "SELECT * FROM (SELECT * FROM points WHERE (lat BETWEEN :latSouth AND :latCenter) AND (lon BETWEEN :lonCenter AND :lonEast) ORDER BY random() LIMIT 2500)")
+    abstract fun findPointsInBounds(
+        latNorth: Double,
+        latSouth: Double,
+        lonWest: Double,
+        lonEast: Double,
+        latCenter: Double,
+        lonCenter: Double
+    ): Cursor
 }

@@ -21,9 +21,6 @@ The working set is limited to 10k. It work with much bigger sets too, but i see 
 
 # Bottlenecks
 
-The CSV file. The devil called, asked to return. It's a request to use it as it is. But maybe it would be better to make a pre-filled db file at
-least. Or make a separate files, with partition by regions or countries.
-
 The server approach, with paging and so on is not under discussion.
 
-Biggest sadness that we can't remove the file from 'raw' or 'assets' and decrease the app size.
+Biggest sadness that we can't remove the file from 'assets' and decrease the app size.

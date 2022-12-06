@@ -11,20 +11,34 @@ import com.google.maps.android.clustering.ClusterManager
 import com.google.maps.android.clustering.view.DefaultClusterRenderer
 
 /**
- * Custom realization for clusters. At the moment just to use custom icons.
- * And clusterize 2 or more points (default is 4).
- *
+ * Custom realization for clusters. To use custom icons.
  * Vector images not allowed by the library.
+ *
+ * And to disable clusters depends on zoom level
  * */
 class KlusterRenderer(context: Context, map: GoogleMap, clusterManager: ClusterManager<PointEntity>) :
     DefaultClusterRenderer<PointEntity>(context, map, clusterManager) {
+
+    private var zoomLevelForCluster = map.maxZoomLevel - (map.maxZoomLevel / 2.5) // 2.0 and 3.0 not looking good
+    var currentZoomLevel: Float = 0f
 
     private val icon1 = BitmapDescriptorFactory.fromResource(R.drawable.whit_30)
     private val icon2 = BitmapDescriptorFactory.fromResource(R.drawable.whit_60)
     private val icon3 = BitmapDescriptorFactory.fromResource(R.drawable.whit_90)
     private val icon4 = BitmapDescriptorFactory.fromResource(R.drawable.whit_120)
 
-    override fun shouldRenderAsCluster(cluster: Cluster<PointEntity>): Boolean = cluster.size > 1
+    /**
+     * 0 - to avoid single-markers on min zoom
+     * */
+    override fun shouldRenderAsCluster(cluster: Cluster<PointEntity>): Boolean {
+        val needCluster = when {
+            cluster.size > 1 && currentZoomLevel < zoomLevelForCluster -> true
+            cluster.size > 3 -> true
+            else -> false
+        }
+
+        return needCluster
+    }
 
     override fun getDescriptorForCluster(cluster: Cluster<PointEntity>): BitmapDescriptor {
         return when {
