@@ -3,6 +3,7 @@ package com.alexeymerov.klustermap.presentation.main
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.alexeymerov.klustermap.R
 import com.alexeymerov.klustermap.common.KlusterRenderer
 import com.alexeymerov.klustermap.common.extensions.collectWhenResumed
@@ -19,6 +20,9 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.maps.android.clustering.ClusterManager
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 
@@ -50,7 +54,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun processViewState(state: ViewState) {
         Timber.d(state.javaClass.simpleName)
         when (state) {
-            is ViewState.NewPointsFound -> updatePointsOnMap(state.points)
+            is ViewState.NewPointsFound -> updatePointsOnMap(state.points, state.itemsToRemove)
             ViewState.ShowMap -> prepareMap()
         }
     }
@@ -90,21 +94,25 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         clusterManager.onCameraIdle() // map has no addListener just replace. So need to call manually.
         val bounds = map.projection.visibleRegion.latLngBounds
         Timber.d("$bounds")
-        findPoints(bounds)
+        findPoints(bounds, clusterManager.algorithm.items)
     }
 
-    private fun findPoints(bounds: LatLngBounds) = sendNewAction(ViewAction.FindPoints(bounds))
+    private fun findPoints(bounds: LatLngBounds, oldItems: Collection<PointEntity>) = sendNewAction(ViewAction.FindPoints(bounds, oldItems))
 
     private fun sendNewAction(action: ViewAction) = viewModel.processAction(action)
 
     /**
      * After many experiments this is the most fast-stable-readable solution i found.
      * */
-    private fun updatePointsOnMap(points: Set<PointEntity>) {
-        clusterManager.use {
-            clearItems()
-            addItems(points)
+    private fun updatePointsOnMap(points: Set<PointEntity>, itemsToRemove: Set<PointEntity>) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            clusterManager.use {
+                removeItems(itemsToRemove)
+                addItems(points)
+            }
+            withContext(Dispatchers.Main) {
+                clusterManager.cluster()
+            }
         }
-        clusterManager.cluster()
     }
 }

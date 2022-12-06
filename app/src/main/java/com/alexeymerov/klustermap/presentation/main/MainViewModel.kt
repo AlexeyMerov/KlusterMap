@@ -10,7 +10,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -31,14 +30,21 @@ class MainViewModel @Inject constructor(private val pointsUseCase: PointsUseCase
         setNewState(state)
     }
 
-    private fun findPoints(bounds: LatLngBounds) {
+    /**
+     * 1. Find point by the bounds.
+     * 2. Remove not intersect items to avoid re-drawing existing ones but still remove the ones from outbounds.
+     * */
+    private fun findPoints(bounds: LatLngBounds, oldItems: Collection<PointEntity>) {
         clusterPointsJob?.cancel()
         clusterPointsJob = viewModelScope.launch(Dispatchers.IO) {
-            delay(250) // some debounce for reduce the amount of searches
             Timber.d("Start search VM")
             val points = pointsUseCase.findPointsInBounds(bounds)
             Timber.d("Stop search = ${points.size}")
-            setNewState(ViewState.NewPointsFound(points))
+
+            val itemsToRemove = HashSet<PointEntity>(oldItems)
+            itemsToRemove.removeAll(points)
+
+            setNewState(ViewState.NewPointsFound(points, itemsToRemove))
         }
     }
 
@@ -52,19 +58,19 @@ class MainViewModel @Inject constructor(private val pointsUseCase: PointsUseCase
     fun processAction(action: ViewAction) {
         Timber.d(action.javaClass.simpleName)
         when (action) {
-            is ViewAction.FindPoints -> findPoints(action.bounds)
+            is ViewAction.FindPoints -> findPoints(action.bounds, action.oldItems)
             ViewAction.Initialize -> init()
         }
     }
 
     sealed interface ViewState {
         object ShowMap : ViewState
-        class NewPointsFound(val points: Set<PointEntity>) : ViewState
+        class NewPointsFound(val points: Set<PointEntity>, val itemsToRemove: Set<PointEntity>) : ViewState
     }
 
     sealed interface ViewAction {
         object Initialize : ViewAction
-        class FindPoints(val bounds: LatLngBounds) : ViewAction
+        class FindPoints(val bounds: LatLngBounds, val oldItems: Collection<PointEntity>) : ViewAction
     }
 
 }

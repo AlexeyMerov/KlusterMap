@@ -19,7 +19,7 @@ import com.google.maps.android.clustering.view.DefaultClusterRenderer
 class KlusterRenderer(context: Context, map: GoogleMap, clusterManager: ClusterManager<PointEntity>) :
     DefaultClusterRenderer<PointEntity>(context, map, clusterManager) {
 
-    private var zoomLevelForCluster = map.maxZoomLevel - (map.maxZoomLevel / 3.0)
+    private var zoomLevelForCluster = map.maxZoomLevel - (map.maxZoomLevel / 2.5) // 2.0 and 3.0 not looking good
     var currentZoomLevel: Float = 0f
 
     private val icon1 = BitmapDescriptorFactory.fromResource(R.drawable.whit_30)
@@ -31,7 +31,13 @@ class KlusterRenderer(context: Context, map: GoogleMap, clusterManager: ClusterM
      * 0 - to avoid single-markers on min zoom
      * */
     override fun shouldRenderAsCluster(cluster: Cluster<PointEntity>): Boolean {
-        return cluster.size > 0 && currentZoomLevel < zoomLevelForCluster
+        val needCluster = when {
+            cluster.size > 1 && currentZoomLevel < zoomLevelForCluster -> true
+            cluster.size > 3 -> true
+            else -> false
+        }
+
+        return needCluster
     }
 
     override fun getDescriptorForCluster(cluster: Cluster<PointEntity>): BitmapDescriptor {
