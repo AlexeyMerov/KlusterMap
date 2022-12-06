@@ -30,6 +30,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var map: GoogleMap
 
+    private lateinit var klusterRenderer: KlusterRenderer
     private lateinit var clusterManager: ClusterManager<PointEntity>
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,25 +60,35 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
+        setUpMapDefaults(googleMap)
+        setupClusterManager()
+    }
+
+    private fun setUpMapDefaults(googleMap: GoogleMap) {
         val usaLatLng = CameraUpdateFactory.newLatLng(LatLng(40.0, -100.0))
         map = googleMap
         map.moveCamera(usaLatLng)
         map.uiSettings.isRotateGesturesEnabled = false // i prefer more static behaviour
         map.setMinZoomPreference(1f) // no reason. Better to eyes.
         map.setMaxZoomPreference(21f) // no reason. Better to eyes.
-        setUpCluster()
-
         map.setOnCameraIdleListener {
-            clusterManager.onCameraIdle() // map has no addListener just replace. So need to call manually.
-            val bounds = map.projection.visibleRegion.latLngBounds
-            findPoints(bounds.northeast, bounds.southwest)
+            handleMapIdle()
         }
     }
 
-    private fun setUpCluster() {
+    private fun setupClusterManager() {
         clusterManager = ClusterManager(this, map)
-        clusterManager.renderer = KlusterRenderer(this, map, clusterManager)
+        klusterRenderer = KlusterRenderer(this, map, clusterManager)
+        clusterManager.renderer = klusterRenderer
         map.setOnMarkerClickListener(clusterManager) // Be aware. If you need to handle listener yourself then call cluster.markerClick manually
+    }
+
+    private fun handleMapIdle() {
+        Timber.d("Zoom Level ${map.cameraPosition.zoom}")
+        klusterRenderer.currentZoomLevel = map.cameraPosition.zoom
+        clusterManager.onCameraIdle() // map has no addListener just replace. So need to call manually.
+        val bounds = map.projection.visibleRegion.latLngBounds
+        findPoints(bounds.northeast, bounds.southwest)
     }
 
     private fun findPoints(northeast: LatLng, southwest: LatLng) = sendNewAction(ViewAction.FindPoints(northeast, southwest))
