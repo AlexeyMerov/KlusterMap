@@ -3,7 +3,7 @@ package com.alexeymerov.klustermap.data.repository
 import com.alexeymerov.klustermap.common.BaseCoroutineScope
 import com.alexeymerov.klustermap.data.dao.PointsDao
 import com.alexeymerov.klustermap.data.entity.PointEntity
-import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -21,13 +21,14 @@ class PointsRepositoryImpl @Inject constructor(
      * The cleaner solution would be with using Array.
      * But Cluster works with Collection interface so we make Set ourselves.
      * */
-    override suspend fun findPointsInBounds(northeast: LatLng, southwest: LatLng): Set<PointEntity> {
+    override suspend fun findPointsInBounds(bounds: LatLngBounds): Set<PointEntity> {
         Timber.d("Start search RP")
         val points = pointsDao.findPointsInBounds(
-            latWest = southwest.latitude,
-            latEast = northeast.latitude,
-            lonNorth = northeast.longitude,
-            lonSouth = southwest.longitude)
+            latNorth = bounds.northeast.latitude,
+            latSouth = bounds.southwest.latitude,
+            lonWest = bounds.southwest.longitude,
+            lonEast = bounds.northeast.longitude
+        )
 
         val result = HashSet<PointEntity>()
         for (i in 0 until points.count) {

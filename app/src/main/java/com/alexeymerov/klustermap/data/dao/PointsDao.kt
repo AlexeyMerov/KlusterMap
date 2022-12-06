@@ -7,7 +7,12 @@ import androidx.room.Query
 @Dao
 abstract class PointsDao {
 
-    @Query("SELECT * FROM points WHERE lat > :latWest AND lat < :latEast AND lon < :lonNorth AND lon > :lonSouth LIMIT 10000")
-    abstract fun findPointsInBounds(latWest: Double, latEast: Double, lonNorth: Double, lonSouth: Double): Cursor
-
+    @Query(
+        "SELECT * FROM points " +
+            "WHERE lat < :latNorth AND lat > :latSouth " +
+            "AND lon > :lonWest AND lon < :lonEast " +
+            "ORDER BY random() " +
+            "LIMIT 10000;"
+    )
+    abstract fun findPointsInBounds(latNorth: Double, latSouth: Double, lonWest: Double, lonEast: Double): Cursor
 }

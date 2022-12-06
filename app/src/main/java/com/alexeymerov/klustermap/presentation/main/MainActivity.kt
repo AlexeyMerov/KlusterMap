@@ -16,6 +16,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
 import com.google.maps.android.clustering.ClusterManager
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
@@ -88,10 +89,11 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         klusterRenderer.currentZoomLevel = map.cameraPosition.zoom
         clusterManager.onCameraIdle() // map has no addListener just replace. So need to call manually.
         val bounds = map.projection.visibleRegion.latLngBounds
-        findPoints(bounds.northeast, bounds.southwest)
+        Timber.d("$bounds")
+        findPoints(bounds)
     }
 
-    private fun findPoints(northeast: LatLng, southwest: LatLng) = sendNewAction(ViewAction.FindPoints(northeast, southwest))
+    private fun findPoints(bounds: LatLngBounds) = sendNewAction(ViewAction.FindPoints(bounds))
 
     private fun sendNewAction(action: ViewAction) = viewModel.processAction(action)
 

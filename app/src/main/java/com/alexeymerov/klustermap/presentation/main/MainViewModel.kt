@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.alexeymerov.klustermap.common.extensions.send
 import com.alexeymerov.klustermap.data.entity.PointEntity
 import com.alexeymerov.klustermap.domain.points.PointsUseCase
-import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -31,12 +31,12 @@ class MainViewModel @Inject constructor(private val pointsUseCase: PointsUseCase
         setNewState(state)
     }
 
-    private fun findPoints(northeast: LatLng, southwest: LatLng) {
+    private fun findPoints(bounds: LatLngBounds) {
         clusterPointsJob?.cancel()
         clusterPointsJob = viewModelScope.launch(Dispatchers.IO) {
             delay(250) // some debounce for reduce the amount of searches
             Timber.d("Start search VM")
-            val points = pointsUseCase.findPointsInBounds(northeast, southwest)
+            val points = pointsUseCase.findPointsInBounds(bounds)
             Timber.d("Stop search = ${points.size}")
             setNewState(ViewState.NewPointsFound(points))
         }
@@ -52,7 +52,7 @@ class MainViewModel @Inject constructor(private val pointsUseCase: PointsUseCase
     fun processAction(action: ViewAction) {
         Timber.d(action.javaClass.simpleName)
         when (action) {
-            is ViewAction.FindPoints -> findPoints(action.northeast, action.southwest)
+            is ViewAction.FindPoints -> findPoints(action.bounds)
             ViewAction.Initialize -> init()
         }
     }
@@ -64,7 +64,7 @@ class MainViewModel @Inject constructor(private val pointsUseCase: PointsUseCase
 
     sealed interface ViewAction {
         object Initialize : ViewAction
-        class FindPoints(val northeast: LatLng, val southwest: LatLng) : ViewAction
+        class FindPoints(val bounds: LatLngBounds) : ViewAction
     }
 
 }
