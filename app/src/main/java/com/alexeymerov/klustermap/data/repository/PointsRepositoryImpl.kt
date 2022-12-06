@@ -20,17 +20,22 @@ class PointsRepositoryImpl @Inject constructor(
      * Find point in the DB by the bounds.
      * The cleaner solution would be with using Array.
      * But Cluster works with Collection interface so we make Set ourselves.
+     *
+     * center - to evenly spread point by 4 zones
      * */
     override suspend fun findPointsInBounds(bounds: LatLngBounds): Set<PointEntity> {
         Timber.d("Start search RP")
+        val result = HashSet<PointEntity>()
+
         val points = pointsDao.findPointsInBounds(
             latNorth = bounds.northeast.latitude,
             latSouth = bounds.southwest.latitude,
             lonWest = bounds.southwest.longitude,
-            lonEast = bounds.northeast.longitude
+            lonEast = bounds.northeast.longitude,
+            latCenter = bounds.center.latitude,
+            lonCenter = bounds.center.longitude
         )
 
-        val result = HashSet<PointEntity>()
         for (i in 0 until points.count) {
             points.moveToNext()
             result.add(PointEntity(
@@ -41,7 +46,6 @@ class PointsRepositoryImpl @Inject constructor(
         points.close() // feel free to change to 'use {}' extension
 
         return result
-
     }
 
 }
