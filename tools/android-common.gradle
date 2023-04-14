@@ -59,13 +59,13 @@ android {
 }
 
 dependencies {
-    implementation deps.google.hilt.android
-    kapt deps.google.hilt.compiler
+    implementation "com.google.dagger:hilt-android:${versions.hilt}"
+    kapt "com.google.dagger:hilt-compiler:2.45"
 
-    implementation deps.androidx.navigation.fragment
-    implementation deps.androidx.navigation.ui
+    implementation "androidx.navigation:navigation-fragment-ktx:${versions.navigation}"
+    implementation "androidx.navigation:navigation-ui-ktx:${versions.navigation}"
 
-    implementation deps.debug.timber
+    implementation "com.jakewharton.timber:timber:5.0.1"
 }
 
 kapt {

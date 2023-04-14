@@ -1,9 +1,9 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
-//apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
 apply from: "$project.rootDir/tools/android-common.gradle"
+
 android {
     lint {
         abortOnError true
@@ -16,22 +16,22 @@ android {
 
 dependencies {
 
-    implementation deps.androidx.core_ktx
-    implementation deps.androidx.appcompat
-    implementation deps.androidx.constraint_layout
+    implementation "androidx.core:core-ktx:${versions.androidx_core}"
+    implementation "androidx.appcompat:appcompat:${versions.androidx_appcompat}"
+    implementation "androidx.constraintlayout:constraintlayout:${versions.constraintlayout}"
 
-    implementation deps.google.material
+    implementation "com.google.android.material:material:${versions.google_material}"
 
-    implementation deps.androidx.room.runtime
-    implementation deps.androidx.room.ktx
-    kapt deps.androidx.room.compiler
+    implementation "androidx.room:room-runtime:${versions.room}"
+    implementation "androidx.room:room-ktx:${versions.room}"
+    kapt "androidx.room:room-compiler:${versions.room}"
 
-    implementation deps.google.playservices.maps
-    implementation deps.google.maps_utils
-    implementation deps.google.maps_utils_ktx
+    implementation "com.google.android.gms:play-services-maps:${versions.play_maps}"
+    implementation "com.google.maps.android:android-maps-utils:${versions.maps_utils}"
+    implementation "com.google.maps.android:maps-utils-ktx:${versions.maps_utils_ktx}"
 
     // required to avoid crash on Android 12 API 31
-    implementation deps.androidx.work.runtime_ktx
+    implementation "androidx.work:work-runtime-ktx:${versions.androidx_work}"
 
 //    testImplementation 'junit:junit:4.13.2'
 }
