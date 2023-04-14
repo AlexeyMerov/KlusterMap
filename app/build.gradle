@@ -1,9 +1,18 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'com.google.gms.google-services'
+//apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
 apply from: "$project.rootDir/tools/android-common.gradle"
+android {
+    lint {
+        abortOnError true
+        checkReleaseBuilds true
+        disable 'UnsafeExperimentalUsageError', 'UnsafeExperimentalUsageWarning'
+        fatal 'StopShip'
+        xmlReport false
+    }
+}
 
 dependencies {
 

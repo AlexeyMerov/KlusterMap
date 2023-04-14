@@ -23,6 +23,8 @@ data class PointEntity(
 
     override fun getSnippet(): String = id.toString()
 
+    override fun getZIndex() = 0f
+
     companion object {
         const val COLUMN_ID_INDEX = 0
         const val COLUMN_LAT_INDEX = 1
