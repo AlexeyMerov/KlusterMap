@@ -4,14 +4,14 @@ ext.buildConfig = [
         target_sdk_version : '33',
         min_sdk_version    : 24,
         compile_sdk_version: 33,
-        kotlin_lang_version: "1.7"
+        kotlin_lang_version: "1.8"
 ]
 
 ext.versions = [
         tools_gradle         : '8.0.0',
 
         // kotlin
-        kotlin               : '1.7.20',
+        kotlin               : '1.8.20',
         kotlin_coroutines    : '1.6.0',
 
         navigation           : '2.5.3',
